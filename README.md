@@ -7,12 +7,16 @@
 - 聴講メモを Markdown ファイルとしてダウンロード(ユーザー単位でレート制限)
 - パスワードリセット(メール送信は Solid Queue で非同期。IP / 宛先 / 全体の3段階で送信数を制限)
 
+## ドキュメント
+
+設計 (UML)・開発ガイド・設計判断の記録・Ruby / Rails 学習ガイドは [docs/](docs/README.md) にまとめている。
+
 ## 技術スタック
 
 | 分類 | 採用 |
 | --- | --- |
 | 言語 / FW | Ruby 4.0 / Rails 8.1 |
-| DB | PostgreSQL 18 (Solid Queue / Cache / Cable も PostgreSQL) |
+| DB | PostgreSQL 18 (Solid Queue / Solid Cache も PostgreSQL。Redis なし) |
 | フロント | Hotwire (Turbo + Stimulus), importmap, Tailwind CSS v4 |
 | 認証 | Rails 8 組み込みの authentication ジェネレータ + 新規登録 |
 | テスト | RSpec, FactoryBot, Capybara (headless Chromium), shoulda-matchers, SimpleCov |
