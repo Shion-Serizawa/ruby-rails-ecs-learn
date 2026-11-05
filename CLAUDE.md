@@ -1,6 +1,15 @@
 # CLAUDE.md
 
-このリポジトリで作業する AI エージェント向けのガイド。人間向けの規約は [CONTRIBUTING.md](CONTRIBUTING.md)、セットアップは [README.md](README.md) を参照。
+このリポジトリで作業する AI エージェント向けのガイド (`AGENTS.md` はこのファイルへのシンボリックリンク)。
+人間向けの規約は [CONTRIBUTING.md](CONTRIBUTING.md)、セットアップは [README.md](README.md)、
+設計とドキュメント一覧は [docs/README.md](docs/README.md) を参照。
+
+## 作業前に読むもの
+
+- 構成・処理の流れ: [docs/architecture.md](docs/architecture.md)
+- データ構造とルール: [docs/domain-model.md](docs/domain-model.md)
+- 設計判断の理由: [docs/adr/](docs/adr/README.md) (判断を覆す変更をするときは新しい ADR を書く)
+- デプロイの前提: [docs/deployment.md](docs/deployment.md)
 
 ## プロジェクト概要
 
@@ -30,6 +39,7 @@ docker compose run --rm web bundle exec annotaterb models                 # マ�
 3. `bundle exec erb_lint --lint-all` (no errors)
 4. `bin/brakeman` (no warnings)
 5. CSS を触ったら `bin/rails tailwindcss:build` がエラーなく通る
+6. ルート・モデル・環境変数・構成を変えたら、`docs/` と README の該当箇所も同じ PR で更新した
 
 ## アーキテクチャと規約
 
