@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://conf-notes.example/schemas/conference_import.schema.json",
+  "title": "Conference import",
+  "description": "Conf Notes にカンファレンスとセッション(トーク)を一括登録するためのデータ形式",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "starts_on", "ends_on"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": { "type": "string", "minLength": 1, "maxLength": 100, "description": "カンファレンス名 (例: RubyKaigi 2026)" },
+    "venue": { "type": ["string", "null"], "description": "会場" },
+    "starts_on": { "type": "string", "format": "date", "description": "開始日 (YYYY-MM-DD)" },
+    "ends_on": { "type": "string", "format": "date", "description": "終了日 (YYYY-MM-DD)。開始日以降" },
+    "website_url": { "type": ["string", "null"], "pattern": "^https?://", "description": "公式サイトURL" },
+    "talks": {
+      "type": "array",
+      "maxItems": 500,
+      "description": "セッション一覧",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["title", "speaker"],
+        "properties": {
+          "title": { "type": "string", "minLength": 1, "maxLength": 200, "description": "タイトル" },
+          "speaker": { "type": "string", "minLength": 1, "maxLength": 100, "description": "スピーカー名。複数人なら ', ' 区切り" },
+          "starts_at": {
+            "type": ["string", "null"],
+            "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}",
+            "description": "開始日時 (ISO 8601。例: 2026-04-22T10:00:00+09:00)。タイムゾーン省略時は日本時間として扱う"
+          },
+          "room": { "type": ["string", "null"], "description": "会場/ルーム名" },
+          "status": {
+            "type": "string",
+            "enum": ["planned", "attended", "skipped"],
+            "default": "planned",
+            "description": "planned=聴講予定, attended=聴講済み, skipped=スキップ"
+          },
+          "rating": { "type": ["integer", "null"], "minimum": 1, "maximum": 5, "description": "評価 1〜5" },
+          "notes": { "type": ["string", "null"], "description": "メモ (Markdown 可)" },
+          "favorite": { "type": "boolean", "default": false, "description": "お気に入り" },
+          "tags": {
+            "type": "array",
+            "maxItems": 10,
+            "uniqueItems": true,
+            "items": { "type": "string", "minLength": 1, "maxLength": 30 },
+            "description": "タグ (小文字推奨。例: [\"ruby\", \"performance\"])"
+          }
+        }
+      }
+    }
+  }
+}

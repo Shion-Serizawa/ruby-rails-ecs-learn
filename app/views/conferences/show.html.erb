@@ -1,0 +1,40 @@
+<% content_for :title, @conference.name %>
+
+<div class="mb-6">
+  <%= link_to "← #{t("conferences.index.title")}", conferences_path, class: "text-sm link" %>
+  <div class="mt-2 flex flex-wrap items-start justify-between gap-3">
+    <div>
+      <h1 class="text-2xl font-bold"><%= @conference.name %></h1>
+      <p class="mt-1 text-sm text-gray-600">
+        <%= l(@conference.starts_on) %> 〜 <%= l(@conference.ends_on) %>
+        <% if @conference.venue.present? %> / <%= @conference.venue %><% end %>
+      </p>
+      <% if @conference.website_url.present? %>
+        <%= link_to @conference.website_url, @conference.website_url, class: "text-sm link", target: "_blank", rel: "noopener" %>
+      <% end %>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <%= link_to t(".new_talk"), new_conference_talk_path(@conference), class: "btn-primary" %>
+      <%= button_to t(".export"), conference_export_path(@conference), class: "btn-secondary" %>
+      <%= link_to t("shared.edit"), edit_conference_path(@conference), class: "btn-secondary" %>
+      <%= button_to t("shared.destroy"), @conference, method: :delete, class: "btn-danger",
+                                                      form: { data: { turbo_confirm: t("shared.confirm_destroy") } } %>
+    </div>
+  </div>
+</div>
+
+<div class="mb-4 flex flex-wrap items-center gap-2 text-sm">
+  <%= link_to t(".all"), @conference, class: params[:tag].blank? && params[:favorites].blank? ? "chip bg-red-700 text-white" : "chip" %>
+  <%= link_to "★ #{t(".favorites")}", conference_path(@conference, favorites: 1), class: params[:favorites].present? ? "chip bg-red-700 text-white" : "chip" %>
+  <% @tags.each do |tag| %>
+    <%= link_to "##{tag.name}", conference_path(@conference, tag: tag.name), class: params[:tag] == tag.name ? "chip bg-red-700 text-white" : "chip" %>
+  <% end %>
+</div>
+
+<% if @talks.any? %>
+  <ul id="talks" class="space-y-3">
+    <%= render @talks %>
+  </ul>
+<% else %>
+  <p class="card text-gray-500"><%= t(".empty") %></p>
+<% end %>

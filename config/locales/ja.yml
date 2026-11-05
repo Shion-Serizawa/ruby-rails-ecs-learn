@@ -1,0 +1,186 @@
+ja:
+  app_name: "Conf Notes"
+  activemodel:
+    models:
+      conference_import: インポート
+    attributes:
+      conference_import:
+        payload: JSONデータ
+    errors:
+      models:
+        conference_import:
+          attributes:
+            payload:
+              too_large: が大きすぎます(1MBまで)
+              invalid_json: が正しいJSONオブジェクトではありません
+            base:
+              schema_violation: "スキーマ違反 %{pointer}: %{detail}"
+              record_invalid: "%{pointer}: %{detail}"
+
+  activerecord:
+    models:
+      user: ユーザー
+      conference: カンファレンス
+      talk: セッション
+      tag: タグ
+    attributes:
+      user:
+        email_address: メールアドレス
+        password: パスワード
+        password_confirmation: パスワード(確認)
+      conference:
+        name: 名前
+        venue: 会場
+        starts_on: 開始日
+        ends_on: 終了日
+        website_url: WebサイトURL
+        talks: セッション
+      talk:
+        title: タイトル
+        speaker: スピーカー
+        starts_at: 開始日時
+        room: 会場/ルーム
+        status: ステータス
+        rating: 評価
+        notes: メモ
+        favorite: お気に入り
+        tag_list: タグ(カンマ区切り)
+      tag:
+        name: 名前
+    errors:
+      models:
+        conference:
+          attributes:
+            ends_on:
+              before_starts_on: は開始日以降の日付にしてください
+    enums:
+      talk:
+        status:
+          planned: 聴講予定
+          attended: 聴講済み
+          skipped: スキップ
+
+  helpers:
+    submit:
+      create: 登録する
+      update: 更新する
+
+  shared:
+    back: 戻る
+    edit: 編集
+    destroy: 削除
+    confirm_destroy: 本当に削除しますか？
+    sign_out: ログアウト
+    errors_title: "%{count}件のエラーがあります"
+
+  layouts:
+    application:
+      sign_in: ログイン
+      sign_up: 新規登録
+
+  sessions:
+    new:
+      title: ログイン
+      submit: ログイン
+      forgot_password: パスワードを忘れた場合
+      sign_up: アカウントを作成
+    create:
+      failure: メールアドレスかパスワードが違います
+      rate_limited: しばらく時間をおいてから再度お試しください
+
+  registrations:
+    new:
+      title: アカウント作成
+      submit: 登録する
+      sign_in: ログインはこちら
+    create:
+      success: アカウントを作成しました
+      rate_limited: しばらく時間をおいてから再度お試しください
+
+  passwords:
+    new:
+      title: パスワードを忘れた場合
+      submit: リセット用メールを送信
+    edit:
+      title: パスワードの再設定
+      submit: 保存
+    create:
+      success: パスワードリセットの案内を送信しました(登録済みの場合)
+      rate_limited: しばらく時間をおいてから再度お試しください
+    update:
+      success: パスワードを再設定しました
+      mismatch: パスワードが一致しません
+    invalid_token: リンクが無効か期限切れです
+
+  conferences:
+    index:
+      title: カンファレンス
+      new: カンファレンスを追加
+      import: JSONからインポート
+      empty: まだカンファレンスがありません
+      talks_count: "%{count}セッション"
+    show:
+      new_talk: セッションを追加
+      export: メモをメールでエクスポート
+      all: すべて
+      favorites: お気に入りのみ
+      empty: セッションはまだありません
+    new:
+      title: カンファレンスを追加
+    edit:
+      title: カンファレンスを編集
+    create:
+      success: カンファレンスを登録しました
+    update:
+      success: カンファレンスを更新しました
+    destroy:
+      success: カンファレンスを削除しました
+    exports:
+      create:
+        success: エクスポートを受け付けました。%{email} 宛に送信します
+
+  conference_imports:
+    new:
+      title: JSONからインポート
+      lead: LLM でタイムテーブル等を整形し、JSON を貼り付けてカンファレンスとセッションを一括登録できます。
+      step1: 1. LLM 用のプロンプト / スキーマを取得
+      step1_help: プロンプトをコピーして LLM に貼り付け、末尾に公式サイトのタイムテーブルなどを続けて送信してください。
+      copy_prompt: LLM用プロンプトをコピー
+      copy_schema: スキーマだけコピー
+      download_schema: スキーマをダウンロード
+      show_schema: JSON Schema を表示
+      copied: コピーしました ✓
+      step2: 2. LLM が出力した JSON を貼り付け
+      payload_placeholder: '{ "name": "RubyKaigi 2026", "starts_on": "2026-04-22", ... }'
+      submit: インポートする
+    create:
+      success: インポートしました(セッション%{count}件)
+
+  talks:
+    new:
+      title: セッションを追加
+    edit:
+      title: セッションを編集
+    show:
+      no_notes: メモはまだありません
+    create:
+      success: セッションを登録しました
+    update:
+      success: セッションを更新しました
+    destroy:
+      success: セッションを削除しました
+    favorite_button:
+      add: お気に入りに追加
+      remove: お気に入りから外す
+    form:
+      no_rating: 未評価
+      notes_placeholder: Markdownで自由にメモ
+
+  conference_mailer:
+    export:
+      subject: "【Conf Notes】%{name} の聴講メモ"
+      body: "%{name} の聴講メモを添付ファイルでお送りします。"
+
+  passwords_mailer:
+    reset:
+      subject: パスワードの再設定

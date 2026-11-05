@@ -1,0 +1,10 @@
+<% if record.errors.any? %>
+  <div id="error_explanation" class="mb-5 rounded-md bg-red-50 px-4 py-3 text-red-700">
+    <h2 class="font-medium"><%= t("shared.errors_title", count: record.errors.count) %></h2>
+    <ul class="mt-1 list-inside list-disc text-sm">
+      <% record.errors.full_messages.each do |message| %>
+        <li><%= message %></li>
+      <% end %>
+    </ul>
+  </div>
+<% end %>

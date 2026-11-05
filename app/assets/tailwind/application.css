@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+/*
+ * よく使う UI パーツを独自ユーティリティとして定義する。
+ * Tailwind v4 では @layer components のクラスを @apply できないため @utility を使う。
+ */
+@utility btn {
+  @apply inline-flex items-center justify-center gap-1 rounded-md px-3.5 py-2 text-sm font-medium cursor-pointer transition-colors;
+}
+@utility btn-primary {
+  @apply btn bg-red-700 text-white hover:bg-red-600;
+}
+@utility btn-secondary {
+  @apply btn bg-white text-gray-800 ring-1 ring-gray-300 hover:bg-gray-50;
+}
+@utility btn-danger {
+  @apply btn bg-white text-red-700 ring-1 ring-red-300 hover:bg-red-50;
+}
+@utility label {
+  @apply block text-sm font-medium text-gray-700;
+}
+@utility input {
+  @apply mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-2 focus:outline-red-600;
+}
+@utility card {
+  @apply rounded-lg bg-white p-5 shadow-sm ring-1 ring-gray-200;
+}
+@utility link {
+  @apply text-red-700 underline hover:no-underline;
+}
+@utility chip {
+  @apply inline-block rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-700;
+}
+
+/* pagy のページネーション (@pagy.series_nav) */
+.pagy.series-nav {
+  @apply flex flex-wrap justify-center gap-1 text-sm;
+
+  a {
+    @apply rounded-md px-3 py-1.5 ring-1 ring-gray-300 bg-white hover:bg-gray-50;
+  }
+  a[aria-current="page"] {
+    @apply bg-red-700 text-white ring-red-700;
+  }
+  a[aria-disabled="true"]:not([aria-current]) {
+    @apply text-gray-400;
+  }
+}

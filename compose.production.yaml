@@ -1,0 +1,68 @@
+# 本番イメージ (Dockerfile) をローカルで動かして ECS 相当の構成を確認する
+#   docker compose -f compose.production.yaml up --build
+#   → http://localhost:8080  /  送信メールは http://localhost:8025 (Mailpit)
+#
+# ECS では web / worker をそれぞれ別の ECS Service (同じイメージ・command 違い) として動かし、
+# db は RDS、mail は SES に置き換えるイメージ。
+# 開発環境 (compose.yaml) とコンテナ・ボリュームが衝突しないようプロジェクト名を分ける
+name: conf_notes_prod
+
+x-app: &app
+  build: .
+  image: conf_notes:latest
+  environment: &app_env
+    DB_HOST: db
+    DB_USERNAME: postgres
+    DB_PASSWORD: postgres
+    # 本番では Secrets Manager / SSM Parameter Store から注入する
+    SECRET_KEY_BASE: ${SECRET_KEY_BASE:-local-only-insecure-secret-key-base-change-me}
+    # ローカルでは TLS 終端 (ALB) がないので HTTP で動かす
+    RAILS_FORCE_SSL: "false"
+    RAILS_ASSUME_SSL: "false"
+    APP_HOST: localhost:8080
+    APP_PROTOCOL: http
+    SMTP_ADDRESS: mail
+    SMTP_PORT: "1025"
+    SMTP_STARTTLS: "false"
+  depends_on:
+    db:
+      condition: service_healthy
+
+services:
+  web:
+    <<: *app
+    ports:
+      - "8080:80"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost/up"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  worker:
+    <<: *app
+    command: ["./bin/jobs"]
+    depends_on:
+      web:
+        condition: service_healthy
+
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata_prod:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  mail:
+    image: axllent/mailpit:v1.27
+    ports:
+      - "8025:8025"
+
+volumes:
+  pgdata_prod:

@@ -1,0 +1,8 @@
+<div id="<%= dom_id(talk, :favorite) %>">
+  <%= button_to talk_favorite_path(talk), method: :patch,
+                                          class: "text-2xl leading-none #{talk.favorite? ? "text-amber-400" : "text-gray-300 hover:text-amber-300"}",
+                                          title: t(talk.favorite? ? "talks.favorite_button.remove" : "talks.favorite_button.add"),
+                                          aria: { pressed: talk.favorite? } do %>
+    ★
+  <% end %>
+</div>

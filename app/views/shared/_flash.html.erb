@@ -1,0 +1,8 @@
+<div id="flash">
+  <% if notice.present? %>
+    <p id="notice" class="mb-5 rounded-md bg-green-50 px-3 py-2 font-medium text-green-700"><%= notice %></p>
+  <% end %>
+  <% if alert.present? %>
+    <p id="alert" class="mb-5 rounded-md bg-red-50 px-3 py-2 font-medium text-red-700"><%= alert %></p>
+  <% end %>
+</div>

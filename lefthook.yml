@@ -1,0 +1,24 @@
+# Git hooks (https://lefthook.dev)
+#   セットアップ: mise install && lefthook install
+#   Ruby はコンテナ内にあるため docker compose 経由で実行する
+pre-commit:
+  parallel: true
+  jobs:
+    - name: rubocop
+      glob: "*.{rb,rake,ru}"
+      run: docker compose run --rm --no-deps -T web bin/rubocop --force-exclusion {staged_files}
+    - name: erb_lint
+      glob: "*.erb"
+      run: docker compose run --rm --no-deps -T web bundle exec erb_lint {staged_files}
+
+commit-msg:
+  jobs:
+    - name: conventional-commits
+      run: script/check-commit-msg {1}
+
+pre-push:
+  jobs:
+    - name: brakeman
+      run: docker compose run --rm --no-deps -T web bin/brakeman --no-pager -q
+    - name: rspec
+      run: docker compose run --rm -T -e RAILS_ENV=test web bash -c "bin/rails db:prepare && bundle exec rspec"

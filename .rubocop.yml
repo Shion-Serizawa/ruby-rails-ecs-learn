@@ -1,0 +1,74 @@
+# RuboCop 設定
+# 実務でよく使われる構成: 本体 + Rails / Performance / RSpec 系プラグイン
+plugins:
+  - rubocop-capybara
+  - rubocop-factory_bot
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-rspec_rails
+
+AllCops:
+  TargetRubyVersion: 4.0
+  NewCops: enable
+  Exclude:
+    - "bin/**/*"
+    - "db/*schema.rb"
+    - "node_modules/**/*"
+    - "tmp/**/*"
+    - "vendor/**/*"
+
+# --- Style ---------------------------------------------------------------
+# Rails のジェネレータ出力に合わせてダブルクォートで統一
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+# クラスコメント必須は学習用途では過剰
+Style/Documentation:
+  Enabled: false
+
+# Ruby 3.4+ では文字列リテラルが chilled string になるため magic comment は不要とする
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# ActiveModel の慣習 (save は true/false を返す) に合わせる
+Naming/PredicateMethod:
+  AllowedMethods:
+    - save
+
+# --- Layout --------------------------------------------------------------
+Layout/LineLength:
+  Max: 120
+
+# --- Metrics -------------------------------------------------------------
+Metrics/BlockLength:
+  Exclude:
+    - "config/**/*"
+    - "spec/**/*"
+
+Metrics/MethodLength:
+  Max: 15
+  Exclude:
+    - "db/migrate/*"
+
+Metrics/AbcSize:
+  Exclude:
+    - "db/migrate/*"
+
+# --- RSpec ---------------------------------------------------------------
+# 日本語の example 名を使うため
+RSpec/ExampleLength:
+  Max: 30
+RSpec/MultipleExpectations:
+  Max: 8
+RSpec/DescribeClass:
+  Exclude:
+    - "spec/requests/**/*"
+    - "spec/system/**/*"
+# context の説明は日本語 (「〜の場合」) で書くため
+RSpec/ContextWording:
+  Enabled: false
+RSpec/NestedGroups:
+  Max: 4

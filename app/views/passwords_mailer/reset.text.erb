@@ -1,0 +1,4 @@
+以下のURLからパスワードを再設定できます。
+<%= edit_password_url(@user.password_reset_token) %>
+
+このリンクの有効期限は<%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>です。

@@ -1,0 +1,4 @@
+# ホスト側で使うツール (Ruby 本体は Docker 内なので不要)
+#   mise install && lefthook install
+[tools]
+lefthook = "latest"

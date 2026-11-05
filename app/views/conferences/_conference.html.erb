@@ -1,0 +1,12 @@
+<li id="<%= dom_id(conference) %>" class="card">
+  <%= link_to conference, class: "block" do %>
+    <div class="flex items-baseline justify-between gap-3">
+      <h2 class="text-lg font-semibold"><%= conference.name %></h2>
+      <span class="shrink-0 text-sm text-gray-500"><%= t("conferences.index.talks_count", count: conference.talks_count) %></span>
+    </div>
+    <p class="mt-1 text-sm text-gray-600">
+      <%= l(conference.starts_on) %> 〜 <%= l(conference.ends_on) %>
+      <% if conference.venue.present? %> / <%= conference.venue %><% end %>
+    </p>
+  <% end %>
+</li>

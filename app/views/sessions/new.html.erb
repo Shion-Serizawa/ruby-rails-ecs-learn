@@ -1,0 +1,22 @@
+<% content_for :title, t(".title") %>
+
+<div class="mx-auto max-w-md card">
+  <h1 class="mb-5 text-2xl font-bold"><%= t(".title") %></h1>
+
+  <%= form_with url: session_path, class: "space-y-4" do |form| %>
+    <div>
+      <%= form.label :email_address, User.human_attribute_name(:email_address), class: "label" %>
+      <%= form.email_field :email_address, required: true, autofocus: true, autocomplete: "username", value: params[:email_address], class: "input" %>
+    </div>
+    <div>
+      <%= form.label :password, User.human_attribute_name(:password), class: "label" %>
+      <%= form.password_field :password, required: true, autocomplete: "current-password", maxlength: 72, class: "input" %>
+    </div>
+    <%= form.submit t(".submit"), class: "btn-primary w-full" %>
+  <% end %>
+
+  <div class="mt-5 flex justify-between text-sm">
+    <%= link_to t(".forgot_password"), new_password_path, class: "link" %>
+    <%= link_to t(".sign_up"), new_registration_path, class: "link" %>
+  </div>
+</div>
