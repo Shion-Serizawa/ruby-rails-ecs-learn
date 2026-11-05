@@ -74,15 +74,5 @@ RSpec.describe "Conferences" do
         expect { delete conference_path(conference) }.to change(Conference, :count).by(-1)
       end
     end
-
-    describe "POST /conferences/:id/export" do
-      include ActiveJob::TestHelper
-
-      it "エクスポートジョブをキューに積む" do
-        conference = create(:conference, user:)
-        expect { post conference_export_path(conference) }
-          .to have_enqueued_job(ConferenceExportJob).with(conference)
-      end
-    end
   end
 end

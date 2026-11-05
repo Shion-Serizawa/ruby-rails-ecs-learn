@@ -10,7 +10,7 @@ Rails.application.routes.draw do
   end
 
   resources :conferences do
-    resource :export, only: :create, module: :conferences
+    resource :export, only: :show, module: :conferences
     resources :talks, except: :index, shallow: true do
       resource :favorite, only: :update, module: :talks
     end

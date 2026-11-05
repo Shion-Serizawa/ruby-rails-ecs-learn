@@ -121,7 +121,7 @@ ja:
       talks_count: "%{count}セッション"
     show:
       new_talk: セッションを追加
-      export: メモをメールでエクスポート
+      export: メモをダウンロード (.md)
       all: すべて
       favorites: お気に入りのみ
       empty: セッションはまだありません
@@ -136,8 +136,8 @@ ja:
     destroy:
       success: カンファレンスを削除しました
     exports:
-      create:
-        success: エクスポートを受け付けました。%{email} 宛に送信します
+      show:
+        rate_limited: ダウンロードの回数が多すぎます。少し時間をおいてから再度お試しください
 
   conference_imports:
     new:
@@ -175,11 +175,6 @@ ja:
     form:
       no_rating: 未評価
       notes_placeholder: Markdownで自由にメモ
-
-  conference_mailer:
-    export:
-      subject: "【Conf Notes】%{name} の聴講メモ"
-      body: "%{name} の聴講メモを添付ファイルでお送りします。"
 
   passwords_mailer:
     reset:
