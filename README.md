@@ -105,4 +105,6 @@ ECS に載せる際の想定:
 | `RAILS_FORCE_SSL` / `RAILS_ASSUME_SSL` | ALB で TLS 終端する前提で既定 `true` |
 | `RUN_DB_PREPARE` | `true` のときだけ web 起動時に `db:prepare` を流す (既定は流さない。ECS では使わない) |
 
+デプロイ時のセキュリティ上の前提と、インフラ側 (CDK) で満たすべき項目は [docs/deployment.md](docs/deployment.md) を参照。
+
 開発機 (Raspberry Pi, arm64) でビルドしたイメージは Fargate の ARM64 (Graviton) でそのまま動く。
