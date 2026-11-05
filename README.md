@@ -95,12 +95,16 @@ ECS に載せる際の想定:
 
 | 変数 | 用途 |
 | --- | --- |
-| `DB_HOST` / `DB_USERNAME` / `DB_PASSWORD` / `DB_NAME` | RDS 接続 (`_cache` `_queue` `_cable` のDBも使用) |
+| `DB_HOST` / `DB_USERNAME` / `DB_PASSWORD` / `DB_NAME` | RDS 接続 (`_cache` `_queue` のDBも使用) |
 | `SECRET_KEY_BASE` または `RAILS_MASTER_KEY` | Secrets Manager から注入 |
 | `APP_HOST` | **必須**。メール内リンクのホスト (未設定なら起動時に失敗) |
+| `APP_HOSTS` | 受け付ける Host ヘッダ (カンマ区切り)。未指定なら `APP_HOST` のホスト名 |
 | `MAILER_FROM` | **必須**。差出人 (SES で検証済みのアドレス。例: `Conf Notes <no-reply@example.com>`) |
+| `DB_SSLMODE` / `DB_SSLROOTCERT` | DB 接続の TLS。既定 `verify-full` + イメージ同梱の RDS CA バンドル |
 | `SMTP_ADDRESS` / `SMTP_PORT` / `SMTP_USERNAME` / `SMTP_PASSWORD` | SES 等 |
 | `RAILS_FORCE_SSL` / `RAILS_ASSUME_SSL` | ALB で TLS 終端する前提で既定 `true` |
 | `RUN_DB_PREPARE` | `true` のときだけ web 起動時に `db:prepare` を流す (既定は流さない。ECS では使わない) |
+
+デプロイ時のセキュリティ上の前提と、インフラ側 (CDK) で満たすべき項目は [docs/deployment.md](docs/deployment.md) を参照。
 
 開発機 (Raspberry Pi, arm64) でビルドしたイメージは Fargate の ARM64 (Graviton) でそのまま動く。

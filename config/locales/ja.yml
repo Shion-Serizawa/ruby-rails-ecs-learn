@@ -115,7 +115,6 @@ ja:
       rate_limited: しばらく時間をおいてから再度お試しください
     update:
       success: パスワードを再設定しました
-      mismatch: パスワードが一致しません
     invalid_token: リンクが無効か期限切れです
 
   conferences:
@@ -161,6 +160,7 @@ ja:
       submit: インポートする
     create:
       success: インポートしました(セッション%{count}件)
+      rate_limited: インポートの回数が多すぎます。少し時間をおいてから再度お試しください
 
   talks:
     new:
@@ -186,3 +186,7 @@ ja:
   passwords_mailer:
     reset:
       subject: パスワードの再設定
+      link_text: パスワード再設定ページ
+      body_html: "%{link}からパスワードを再設定できます。"
+      text_body: 以下のURLからパスワードを再設定できます。
+      expires_in: このリンクの有効期限は%{duration}です。

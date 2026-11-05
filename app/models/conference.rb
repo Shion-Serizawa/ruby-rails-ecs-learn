@@ -28,6 +28,8 @@ class Conference < ApplicationRecord
   has_many :talks, dependent: :destroy
 
   validates :name, presence: true, length: { maximum: 100 }
+  validates :venue, length: { maximum: 100 }
+  validates :website_url, length: { maximum: 2000 }
   validates :starts_on, :ends_on, presence: true
   validate :ends_on_not_before_starts_on
   validate :website_url_must_be_http

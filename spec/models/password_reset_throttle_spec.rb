@@ -28,6 +28,14 @@ RSpec.describe PasswordResetThrottle do
     expect(users.map { allowed?(it) }).to eq [true, true, false]
   end
 
+  it "全体上限で止められた要求は、宛先ごとの枠を消費しない" do
+    stub_const("#{described_class}::GLOBAL_LIMIT", 1)
+    allowed?(create(:user))
+
+    expect(Array.new(3) { allowed?(user) }).to eq [false, false, false]
+    expect(Rails.cache.read("password-reset:user:#{user.id}", raw: true).to_i).to eq 0
+  end
+
   it "キャッシュが使えないときは送らない (安全側に倒す)" do
     throttle = described_class.new(user, cache: ActiveSupport::Cache::NullStore.new)
     expect(throttle.allow?).to be false

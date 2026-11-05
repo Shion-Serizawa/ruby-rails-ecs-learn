@@ -33,6 +33,10 @@ production:
   primary: &primary_production
     <<: *default
     database: <%= ENV.fetch("DB_NAME", "conf_notes_production") %>
+    # RDS への接続は TLS 必須 + 証明書検証。CA バンドルは Dockerfile でイメージに同梱している。
+    # ローカルの compose.production.yaml では DB_SSLMODE=disable にする
+    sslmode: <%= ENV.fetch("DB_SSLMODE", "verify-full") %>
+    sslrootcert: <%= ENV.fetch("DB_SSLROOTCERT", "/etc/ssl/certs/rds-global-bundle.pem") %>
   cache:
     <<: *primary_production
     database: <%= ENV.fetch("DB_NAME", "conf_notes_production") %>_cache
@@ -41,7 +45,3 @@ production:
     <<: *primary_production
     database: <%= ENV.fetch("DB_NAME", "conf_notes_production") %>_queue
     migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: <%= ENV.fetch("DB_NAME", "conf_notes_production") %>_cable
-    migrations_paths: db/cable_migrate

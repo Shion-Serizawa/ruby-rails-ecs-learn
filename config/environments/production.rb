@@ -21,9 +21,6 @@ Rails.application.configure do
   # Enable serving of images, stylesheets, and JavaScripts from an asset server.
   # config.asset_host = "http://assets.example.com"
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
-
   # Assume all access to the app is happening through a SSL-terminating reverse proxy.
   config.assume_ssl = ENV.fetch("RAILS_ASSUME_SSL", "true") == "true"
 
@@ -76,7 +73,8 @@ Rails.application.configure do
     user_name: ENV.fetch("SMTP_USERNAME", nil),
     password: ENV.fetch("SMTP_PASSWORD", nil),
     authentication: ENV["SMTP_USERNAME"].present? ? :plain : nil,
-    enable_starttls_auto: ENV.fetch("SMTP_STARTTLS", "true") == "true"
+    # auto だと STARTTLS 非対応のサーバに平文で送ってしまうため、TLS を必須にする (ローカルの mailpit 等のみ false)
+    enable_starttls: ENV.fetch("SMTP_STARTTLS", "true") == "true"
   }.compact
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
@@ -98,12 +96,10 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [:id]
 
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # Host ヘッダの許可リスト (DNS rebinding / Host ヘッダ汚染対策)。カンマ区切りで複数指定可。
+  # 未指定なら APP_HOST (メール内リンクのホスト) のホスト名部分を使う
+  config.hosts = ENV.fetch("APP_HOSTS") { required_env.call("APP_HOST").split(":").first }
+                    .split(",").map(&:strip).compact_blank
+  # ALB のヘルスチェックは Host にタスクの IP を入れてくるので /up だけ除外する
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end

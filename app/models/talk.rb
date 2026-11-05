@@ -34,6 +34,8 @@ class Talk < ApplicationRecord
 
   validates :title, presence: true, length: { maximum: 200 }
   validates :speaker, presence: true, length: { maximum: 100 }
+  validates :room, length: { maximum: 100 }
+  validates :notes, length: { maximum: 20_000 }
   validates :rating, numericality: { only_integer: true, in: 1..5 }, allow_nil: true
 
   MAX_TAGS = 10
