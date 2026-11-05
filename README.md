@@ -95,7 +95,7 @@ ECS に載せる際の想定:
 
 | 変数 | 用途 |
 | --- | --- |
-| `DB_HOST` / `DB_USERNAME` / `DB_PASSWORD` / `DB_NAME` | RDS 接続 (`_cache` `_queue` `_cable` のDBも使用) |
+| `DB_HOST` / `DB_USERNAME` / `DB_PASSWORD` / `DB_NAME` | RDS 接続 (`_cache` `_queue` のDBも使用) |
 | `SECRET_KEY_BASE` または `RAILS_MASTER_KEY` | Secrets Manager から注入 |
 | `APP_HOST` | **必須**。メール内リンクのホスト (未設定なら起動時に失敗) |
 | `APP_HOSTS` | 受け付ける Host ヘッダ (カンマ区切り)。未指定なら `APP_HOST` のホスト名 |
