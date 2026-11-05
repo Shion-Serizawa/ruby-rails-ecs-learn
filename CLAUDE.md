@@ -63,8 +63,26 @@ docker compose run --rm web bundle exec annotaterb models                 # マ�
   `Talk` の enum を変えたらスキーマも更新する (spec で不一致を検知する)
 - **credentials**: `config/master.key` はコミットしない。本番は `SECRET_KEY_BASE` 等を環境変数で渡す設計で、credentials は未使用
 
-## Git
+## Git / GitHub
 
+- `main` はブランチ保護されており直接 push できない (管理者も不可)。必ずブランチを切って PR を出す
+  ```sh
+  git switch -c <type>/<説明>   # 例: feat/talk-search
+  git push -u origin HEAD && gh pr create --fill
+  ```
+- マージは Squash のみ。**PR タイトルがそのまま main のコミットメッセージになる**ため、PR タイトルも Conventional Commits 形式にする (CI の `pr_title` で検査)
+- マージ必須チェック: `scan_ruby` `scan_js` `lint` `test` `docker_build` `pr_title`
 - コミットメッセージは Conventional Commits (`feat: ...`, `fix(import): ...`)。詳細は CONTRIBUTING.md
 - 1コミット1論理変更。lint の自動修正だけの差分は `style:` で分ける
-- コミット・プッシュはユーザーに頼まれたときのみ
+- コミット・プッシュ・PR 作成はユーザーに頼まれたときのみ
+- GitHub は Free プラン (公開リポジトリ)。有料機能前提の設定は入れない
+
+## Ruby のバージョンを上げるとき
+
+次の3箇所を揃えて更新する (Dependabot の対象外にしている)。
+
+- `.ruby-version`
+- `Dockerfile` の `ARG RUBY_VERSION`
+- `Dockerfile.dev` の `ARG RUBY_VERSION`
+
+更新後は `docker compose build` し直し、`TargetRubyVersion` (`.rubocop.yml`) もメジャー/マイナーが変わる場合は合わせる。

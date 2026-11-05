@@ -5,7 +5,31 @@ on:
   push:
     branches: [ main ]
 
+# 最小権限 (各ジョブはリポジトリの読み取りのみ)
+permissions:
+  contents: read
+
+# 同じブランチ/PR で新しい push があれば古い実行をキャンセル
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
+  # Squash マージでは PR タイトルがコミットメッセージになるため形式を検査する
+  pr_title:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Conventional Commits format
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          pattern='^(feat|fix|refactor|perf|test|docs|style|build|ci|chore)(\([a-z0-9_-]+\))?!?: .+'
+          if [[ ! "$TITLE" =~ $pattern ]]; then
+            echo "::error::PR タイトルが Conventional Commits 形式ではありません: $TITLE (CONTRIBUTING.md 参照)"
+            exit 1
+          fi
+
   scan_ruby:
     runs-on: ubuntu-latest
 
@@ -118,3 +142,21 @@ jobs:
           path: coverage/
           if-no-files-found: ignore
 
+  # 本番イメージがビルドできることを確認する (ECS Fargate ARM64 / Graviton と同じアーキテクチャ)
+  docker_build:
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build production image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: conf_notes:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
