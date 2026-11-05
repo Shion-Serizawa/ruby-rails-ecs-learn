@@ -76,7 +76,8 @@ Rails.application.configure do
     user_name: ENV.fetch("SMTP_USERNAME", nil),
     password: ENV.fetch("SMTP_PASSWORD", nil),
     authentication: ENV["SMTP_USERNAME"].present? ? :plain : nil,
-    enable_starttls_auto: ENV.fetch("SMTP_STARTTLS", "true") == "true"
+    # auto だと STARTTLS 非対応のサーバに平文で送ってしまうため、TLS を必須にする (ローカルの mailpit 等のみ false)
+    enable_starttls: ENV.fetch("SMTP_STARTTLS", "true") == "true"
   }.compact
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
