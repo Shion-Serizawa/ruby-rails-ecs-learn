@@ -39,7 +39,7 @@ docker compose run --rm web bundle exec annotaterb models                 # マ�
   - 複数モデルにまたがる手続き・変換: `app/services` (`XxxExporter#call` のように1公開メソッド)
   - 非同期処理: `app/jobs` (Solid Queue)。引数には AR オブジェクトを渡してよい (GlobalID)
 - **コントローラ**: REST の7アクションのみ。それ以外の操作はリソースを切り出す
-  (例: お気に入り切替 → `Talks::FavoritesController#update`、エクスポート → `Conferences::ExportsController#create`)
+  (例: お気に入り切替 → `Talks::FavoritesController#update`、エクスポート → `Conferences::ExportsController#show`、スキーマ取得 → `ConferenceImports::SchemasController#show`)
 - **認可**: 必ず `current_user` 起点でスコープする (`current_user.conferences.find`, `Talk.owned_by(current_user)`)。
   `Conference.find(params[:id])` のような素の find は書かない
 - **Strong Parameters**: `params.expect(...)` を使う (Rails 8 流)
@@ -59,6 +59,10 @@ docker compose run --rm web bundle exec annotaterb models                 # マ�
   (`Talk#tag_list=` 参照)
 - **per-form CSRF**: ページ内の各フォームのトークンは別物。curl 等で検証するときは `<meta name="csrf-token">` を使う
 - **本番 `force_ssl`**: ALB のヘルスチェック用に `/up` はリダイレクト除外済み。消さないこと
+- **本番コンテナのポートは 8080**: 非 root で動かすため :80 は使わない (Fargate では bind できないことがある)。
+  ALB のターゲットグループ / ヘルスチェックも 8080 に合わせる
+- **本番の必須環境変数**: `APP_HOST` と `MAILER_FROM` は既定値なし (未設定なら起動時に KeyError)。
+  起動時のマイグレーションは `RUN_DB_PREPARE=true` のときだけ (ECS では単発タスクで流す)
 - **レート制限のカウンタは `Rails.cache`**: `rate_limit` と `PasswordResetThrottle` は Rails.cache に依存する
   (本番 Solid Cache、開発/テスト memory_store)。`:null_store` にすると制限が効かなくなる。
   テストでは `spec/support/cache.rb` が example ごとにクリアする

@@ -16,6 +16,7 @@ ja:
             base:
               schema_violation: "スキーマ違反 %{pointer}: %{detail}"
               record_invalid: "%{pointer}: %{detail}"
+              nonexistent_datetime: "%{pointer}: 存在しない日時です (%{value})"
 
   activerecord:
     models:
@@ -53,6 +54,11 @@ ja:
           attributes:
             ends_on:
               before_starts_on: は開始日以降の日付にしてください
+        talk:
+          attributes:
+            tag_list:
+              too_many_tags: は%{count}個までにしてください
+              tag_too_long: "は1つ%{count}文字までにしてください (%{names})"
     enums:
       talk:
         status:
@@ -174,6 +180,7 @@ ja:
       remove: お気に入りから外す
     form:
       no_rating: 未評価
+      chars: 文字
       notes_placeholder: Markdownで自由にメモ
 
   passwords_mailer:

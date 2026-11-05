@@ -21,6 +21,7 @@ x-app: &app
     RAILS_ASSUME_SSL: "false"
     APP_HOST: localhost:8080
     APP_PROTOCOL: http
+    MAILER_FROM: "Conf Notes <no-reply@localhost>"
     SMTP_ADDRESS: mail
     SMTP_PORT: "1025"
     SMTP_STARTTLS: "false"
@@ -31,10 +32,14 @@ x-app: &app
 services:
   web:
     <<: *app
+    environment:
+      <<: *app_env
+      # ローカルは1台だけなので起動時にマイグレーションする (ECS では単発タスクで流す)
+      RUN_DB_PREPARE: "true"
     ports:
-      - "8080:80"
+      - "8080:8080"
     healthcheck:
-      test: ["CMD", "curl", "-fsS", "http://localhost/up"]
+      test: ["CMD", "curl", "-fsS", "http://localhost:8080/up"]
       interval: 5s
       timeout: 3s
       retries: 20

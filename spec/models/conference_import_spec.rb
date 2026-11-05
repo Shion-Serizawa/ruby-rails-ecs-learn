@@ -62,6 +62,23 @@ RSpec.describe ConferenceImport do
     end
 
     # スキーマでは表現できない制約 (終了日 >= 開始日、URL のホスト有無) はモデル側で検出する
+    it "形式は正しいが実在しない日時はエラーにする (500 や別の日時への繰り上がりを防ぐ)" do
+      payload[:talks][0][:starts_at] = "2026-04-22T25:00"
+      payload[:talks][1][:starts_at] = "2026-02-30T10:00:00+09:00"
+
+      expect { import.save }.not_to change(Conference, :count)
+      expect(import.errors.full_messages).to contain_exactly(
+        "/talks/0/starts_at: 存在しない日時です (2026-04-22T25:00)",
+        "/talks/1/starts_at: 存在しない日時です (2026-02-30T10:00:00+09:00)"
+      )
+    end
+
+    it "秒・小数秒・Z 付きの日時も受け付ける" do
+      payload[:talks][0][:starts_at] = "2026-04-22T10:00:30.5Z"
+      expect(import.save).to be true
+      expect(import.conference.talks.find_by(title: "Keynote").starts_at).to eq Time.utc(2026, 4, 22, 10, 0, 30.5)
+    end
+
     it "モデルのバリデーション違反も位置付きで報告し、何も保存しない" do
       payload[:ends_on] = "2026-04-01"
       payload[:website_url] = "https://"

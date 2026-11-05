@@ -15,13 +15,13 @@ RSpec.describe "ConferenceImports" do
 
   describe "GET /conference_import/schema.json" do
     it "JSON Schema を返す" do
-      get schema_conference_import_path(format: :json)
+      get conference_import_schema_path(format: :json)
       expect(response.media_type).to eq "application/json"
       expect(response.parsed_body["title"]).to eq "Conference import"
     end
 
     it "download=1 で添付ファイルとして返す" do
-      get schema_conference_import_path(format: :json, download: 1)
+      get conference_import_schema_path(format: :json, download: 1)
       expect(response.headers["Content-Disposition"]).to start_with "attachment"
     end
   end
@@ -36,6 +36,11 @@ RSpec.describe "ConferenceImports" do
       expect(response).to redirect_to(conference_path(user.conferences.last))
       follow_redirect!
       expect(response.body).to include("インポートしました(セッション1件)")
+    end
+
+    it "パラメータの形が崩れていれば 400 を返す" do
+      post conference_import_path, params: { conference_import: "not-a-hash" }
+      expect(response).to have_http_status(:bad_request)
     end
 
     it "不正なら 422 でエラーを表示する" do

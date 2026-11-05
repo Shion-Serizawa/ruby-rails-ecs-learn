@@ -6,7 +6,7 @@ Rails.application.routes.draw do
 
   # 構造化データ(JSON)からの一括インポート。schema は LLM に渡す JSON Schema
   resource :conference_import, only: %i[new create] do
-    get :schema
+    resource :schema, only: :show, module: :conference_imports
   end
 
   resources :conferences do

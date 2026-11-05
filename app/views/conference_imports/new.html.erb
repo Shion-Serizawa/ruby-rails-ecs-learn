@@ -17,7 +17,7 @@
       <template data-clipboard-target="source"><%= ConferenceImport.schema_json %></template>
       <button type="button" class="btn-secondary" data-clipboard-target="button" data-action="clipboard#copy"><%= t(".copy_schema") %></button>
     </div>
-    <%= link_to t(".download_schema"), schema_conference_import_path(format: :json, download: 1), class: "btn-secondary", data: { turbo: false } %>
+    <%= link_to t(".download_schema"), conference_import_schema_path(format: :json, download: 1), class: "btn-secondary", data: { turbo: false } %>
   </div>
 
   <details class="mt-4">

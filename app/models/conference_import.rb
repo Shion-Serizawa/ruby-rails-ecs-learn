@@ -9,13 +9,17 @@ class ConferenceImport
   SCHEMA_PATH = Rails.root.join("app/schemas/conference_import.schema.json")
   MAX_PAYLOAD_BYTES = 1.megabyte
   MAX_ERRORS = 20
+  # スキーマの pattern は形式しか見ないので、日時として実在するかはここで確かめる
+  # (2026-02-30 や 25:00 を Time.zone.parse に渡すと、例外になるか別の日時に繰り上がってしまう)
+  STARTS_AT_FORMAT = /\A(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2})(?:\.\d+)?)?(?:Z|[+-]\d{2}:\d{2})?\z/
 
   attribute :payload, :string
   attr_accessor :user
   attr_reader :conference
 
   validates :payload, presence: true
-  validate :payload_must_be_valid_json, :payload_must_conform_to_schema, if: -> { payload.present? }
+  validate :payload_must_be_valid_json, :payload_must_conform_to_schema, :starts_at_must_exist,
+           if: -> { payload.present? }
 
   def self.schema_json
     @schema_json ||= SCHEMA_PATH.read.freeze
@@ -34,10 +38,6 @@ class ConferenceImport
 
     @conference.save!
     true
-  end
-
-  def talks_count
-    data&.fetch("talks", [])&.size.to_i
   end
 
   private
@@ -68,6 +68,23 @@ class ConferenceImport
       pointer = error["data_pointer"].presence || "/"
       errors.add(:base, :schema_violation, pointer:, detail: error["error"])
     end
+  end
+
+  def starts_at_must_exist
+    return if errors.any?
+
+    Array(data["talks"]).each_with_index do |talk, index|
+      value = talk["starts_at"]
+      next if value.blank? || valid_starts_at?(value)
+
+      errors.add(:base, :nonexistent_datetime, pointer: "/talks/#{index}/starts_at", value:)
+    end
+  end
+
+  def valid_starts_at?(value)
+    match = STARTS_AT_FORMAT.match(value) or return false
+    year, month, day, hour, minute, second = match.captures.map(&:to_i)
+    Date.valid_date?(year, month, day) && hour < 24 && minute < 60 && second < 60
   end
 
   def build_conference

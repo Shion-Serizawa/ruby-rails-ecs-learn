@@ -58,11 +58,15 @@ Rails.application.configure do
   # Set this to true and configure the email server for immediate delivery to raise delivery errors.
   # config.action_mailer.raise_delivery_errors = false
 
-  # Set host to be used by links generated in mailer templates.
+  # メール内リンクのホストと差出人は本番で必須。既定値に黙って置き換わると、リセット用トークン入りのリンクが
+  # 第三者ドメインを指したり、SES が未検証の差出人を拒否したりするため、未設定なら起動時に KeyError で落とす。
+  # イメージビルド中の assets:precompile (SECRET_KEY_BASE_DUMMY=1) だけはダミー値を許す
+  required_env = ->(key) { ENV["SECRET_KEY_BASE_DUMMY"] ? ENV.fetch(key, "build.invalid") : ENV.fetch(key) }
   config.action_mailer.default_url_options = {
-    host: ENV.fetch("APP_HOST", "example.com"),
+    host: required_env.call("APP_HOST"),
     protocol: ENV.fetch("APP_PROTOCOL", "https")
   }
+  config.action_mailer.default_options = { from: required_env.call("MAILER_FROM") }
 
   # SMTP (例: Amazon SES の SMTP インターフェース)。接続情報は環境変数で渡す
   config.action_mailer.delivery_method = :smtp

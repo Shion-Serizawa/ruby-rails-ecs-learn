@@ -87,9 +87,9 @@ ECS に載せる際の想定:
 
 | コンテナ | command | 備考 |
 | --- | --- | --- |
-| web | (デフォルト) `./bin/thrust ./bin/rails server` | :80。ALB のヘルスチェックは `/up` |
+| web | (デフォルト) `./bin/thrust ./bin/rails server` | :8080 (非 root のため非特権ポート)。ALB のヘルスチェックは `/up` |
 | worker | `./bin/jobs` | Solid Queue。別 ECS Service として |
-| migrate | `./bin/rails db:prepare` | デプロイ前の単発タスク。web は `SKIP_DB_PREPARE=true` |
+| migrate | `./bin/rails db:prepare` | デプロイ前の単発タスク。web/worker は起動時にマイグレーションしない |
 
 主な環境変数:
 
@@ -97,9 +97,10 @@ ECS に載せる際の想定:
 | --- | --- |
 | `DB_HOST` / `DB_USERNAME` / `DB_PASSWORD` / `DB_NAME` | RDS 接続 (`_cache` `_queue` `_cable` のDBも使用) |
 | `SECRET_KEY_BASE` または `RAILS_MASTER_KEY` | Secrets Manager から注入 |
-| `APP_HOST` | メール内リンクのホスト |
+| `APP_HOST` | **必須**。メール内リンクのホスト (未設定なら起動時に失敗) |
+| `MAILER_FROM` | **必須**。差出人 (SES で検証済みのアドレス。例: `Conf Notes <no-reply@example.com>`) |
 | `SMTP_ADDRESS` / `SMTP_PORT` / `SMTP_USERNAME` / `SMTP_PASSWORD` | SES 等 |
 | `RAILS_FORCE_SSL` / `RAILS_ASSUME_SSL` | ALB で TLS 終端する前提で既定 `true` |
-| `SKIP_DB_PREPARE` | `true` で起動時のマイグレーションを抑止 |
+| `RUN_DB_PREPARE` | `true` のときだけ web 起動時に `db:prepare` を流す (既定は流さない。ECS では使わない) |
 
 開発機 (Raspberry Pi, arm64) でビルドしたイメージは Fargate の ARM64 (Graviton) でそのまま動く。

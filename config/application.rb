@@ -33,6 +33,9 @@ module ConfNotes
     # These settings can be overridden in specific environments using the files
     # in config/environments, which are processed later.
     #
+    # 差出人の既定値 (開発/テスト用)。本番は MAILER_FROM で必須指定 (config/environments/production.rb)
+    config.action_mailer.default_options = { from: "Conf Notes <no-reply@localhost>" }
+
     config.time_zone = "Tokyo"
     config.i18n.default_locale = :ja
     config.i18n.available_locales = %i[ja en]
