@@ -14,6 +14,7 @@ x-app: &app
     DB_HOST: db
     DB_USERNAME: postgres
     DB_PASSWORD: postgres
+    DB_SSLMODE: disable # ローカルの Postgres は TLS 無し。本番 (RDS) は既定の verify-full
     # 本番では Secrets Manager / SSM Parameter Store から注入する
     SECRET_KEY_BASE: ${SECRET_KEY_BASE:-local-only-insecure-secret-key-base-change-me}
     # ローカルでは TLS 終端 (ALB) がないので HTTP で動かす
