@@ -12,7 +12,7 @@
     </div>
     <div>
       <%= form.label :room, class: "label" %>
-      <%= form.text_field :room, class: "input" %>
+      <%= form.text_field :room, maxlength: 100, class: "input" %>
     </div>
     <div>
       <%= form.label :starts_at, class: "label" %>
@@ -33,7 +33,7 @@
   </div>
   <div data-controller="char-count">
     <%= form.label :notes, class: "label" %>
-    <%= form.text_area :notes, rows: 10, placeholder: t(".notes_placeholder"), class: "input font-mono text-sm",
+    <%= form.text_area :notes, rows: 10, maxlength: 20_000, placeholder: t(".notes_placeholder"), class: "input font-mono text-sm",
                                data: { char_count_target: "input", action: "input->char-count#update" } %>
     <p class="mt-1 text-right text-xs text-gray-500"><span data-char-count-target="output">0</span> <%= t(".chars") %></p>
   </div>

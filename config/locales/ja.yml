@@ -160,6 +160,7 @@ ja:
       submit: インポートする
     create:
       success: インポートしました(セッション%{count}件)
+      rate_limited: インポートの回数が多すぎます。少し時間をおいてから再度お試しください
 
   talks:
     new:

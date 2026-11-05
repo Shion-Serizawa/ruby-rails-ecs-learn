@@ -7,7 +7,7 @@
   </div>
   <div>
     <%= form.label :venue, class: "label" %>
-    <%= form.text_field :venue, class: "input" %>
+    <%= form.text_field :venue, maxlength: 100, class: "input" %>
   </div>
   <div class="grid grid-cols-2 gap-4">
     <div>
@@ -21,7 +21,7 @@
   </div>
   <div>
     <%= form.label :website_url, class: "label" %>
-    <%= form.url_field :website_url, placeholder: "https://", class: "input" %>
+    <%= form.url_field :website_url, maxlength: 2000, placeholder: "https://", class: "input" %>
   </div>
 
   <div class="flex gap-3">

@@ -49,4 +49,15 @@ RSpec.describe "ConferenceImports" do
       expect(response.body).to include("スキーマ違反")
     end
   end
+
+  describe "POST /conference_import のレート制限" do
+    it "同じユーザーは1分に5回までに制限する" do
+      5.times { post conference_import_path, params: { conference_import: { payload: "{}" } } }
+
+      post conference_import_path, params: { conference_import: { payload: "{}" } }
+
+      expect(response).to redirect_to(new_conference_import_path)
+      expect(flash[:alert]).to eq "インポートの回数が多すぎます。少し時間をおいてから再度お試しください"
+    end
+  end
 end
