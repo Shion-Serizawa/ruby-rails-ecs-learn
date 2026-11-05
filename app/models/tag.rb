@@ -24,5 +24,7 @@ class Tag < ApplicationRecord
 
   normalizes :name, with: ->(name) { name.strip.downcase }
 
-  validates :name, presence: true, length: { maximum: 30 }, uniqueness: { scope: :user_id }
+  NAME_MAX_LENGTH = 30
+
+  validates :name, presence: true, length: { maximum: NAME_MAX_LENGTH }, uniqueness: { scope: :user_id }
 end

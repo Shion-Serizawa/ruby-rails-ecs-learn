@@ -14,8 +14,17 @@ RSpec.describe "Exports" do
 
       expect(response).to have_http_status(:ok)
       expect(response.media_type).to eq "text/markdown"
-      expect(response.headers["Content-Disposition"]).to include("attachment", "rubykaigi-2026.md")
+      expect(response.headers["Content-Disposition"]).to include("attachment", "RubyKaigi%202026.md")
       expect(response.body).to include("# RubyKaigi 2026", "## Keynote")
+    end
+
+    it "日本語のカンファレンス名をファイル名に残し、使えない文字は置き換える" do
+      conference.update!(name: "松江Ruby会議/2026")
+
+      get conference_export_path(conference)
+
+      filename = response.headers["Content-Disposition"][/filename\*=UTF-8''(.+)\z/, 1]
+      expect(CGI.unescape(filename)).to eq "松江Ruby会議_2026.md"
     end
 
     it "他人のカンファレンスは 404" do

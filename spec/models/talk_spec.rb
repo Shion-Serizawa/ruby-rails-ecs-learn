@@ -54,6 +54,20 @@ RSpec.describe Talk do
     end
   end
 
+  describe "タグの検証" do
+    it "31文字以上のタグは理由付きで保存できない (例外や理由なしの失敗にしない)" do
+      talk.tag_list = "ruby, #{"a" * 31}"
+      expect(talk.save).to be false
+      expect(talk.errors.full_messages).to include "タグ(カンマ区切り)は1つ30文字までにしてください (#{"a" * 31})"
+    end
+
+    it "11個以上のタグは保存できない" do
+      talk.tag_list = (1..11).map { "t#{it}" }.join(",")
+      expect(talk).not_to be_valid
+      expect(talk.errors[:tag_list]).to include "は10個までにしてください"
+    end
+  end
+
   describe ".owned_by" do
     it "指定ユーザーのカンファレンスに属するセッションだけを返す" do
       mine = create(:talk)

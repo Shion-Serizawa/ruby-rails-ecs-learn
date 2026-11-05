@@ -76,5 +76,8 @@ COPY --chown=rails:rails --from=build /rails /rails
 ENTRYPOINT ["/rails/bin/docker-entrypoint"]
 
 # Start server via Thruster by default, this can be overwritten at runtime
-EXPOSE 80
+# 非 root ユーザーは 1024 未満のポートを bind できない環境がある (Fargate 等) ため 8080 で待ち受ける。
+# ローカルの Docker で :80 が動くのは Docker が ip_unprivileged_port_start=0 を設定しているから
+ENV HTTP_PORT="8080"
+EXPOSE 8080
 CMD ["./bin/thrust", "./bin/rails", "server"]

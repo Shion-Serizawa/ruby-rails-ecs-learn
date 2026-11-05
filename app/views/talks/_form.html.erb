@@ -35,7 +35,7 @@
     <%= form.label :notes, class: "label" %>
     <%= form.text_area :notes, rows: 10, placeholder: t(".notes_placeholder"), class: "input font-mono text-sm",
                                data: { char_count_target: "input", action: "input->char-count#update" } %>
-    <p class="mt-1 text-right text-xs text-gray-500"><span data-char-count-target="output">0</span> 文字</p>
+    <p class="mt-1 text-right text-xs text-gray-500"><span data-char-count-target="output">0</span> <%= t(".chars") %></p>
   </div>
   <div class="flex items-center gap-2">
     <%= form.check_box :favorite, class: "size-4" %>

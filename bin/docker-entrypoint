@@ -1,9 +1,11 @@
 #!/bin/bash -e
 
-# Rails サーバ起動時に DB の作成/マイグレーションを行う。
-# ECS で複数タスクを同時起動する場合は SKIP_DB_PREPARE=true にして、
-# デプロイ前に別タスク (command: ./bin/rails db:prepare) でマイグレーションを流すのが安全。
-if [ "${SKIP_DB_PREPARE}" != "true" ] && [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
+# RUN_DB_PREPARE=true のときだけ、Rails サーバ起動前に DB の作成/マイグレーションを行う。
+#
+# 既定で流さないのは、ECS で複数タスクが同時に起動 (desiredCount > 1、ローリングデプロイ) すると
+# マイグレーションが競合してタスクが落ちるため。本番ではデプロイ前に単発タスク
+# (command: ./bin/rails db:prepare) で流す。ローカルの compose.production.yaml では true にしている。
+if [ "${RUN_DB_PREPARE}" == "true" ] && [ "${@: -2:1}" == "./bin/rails" ] && [ "${@: -1:1}" == "server" ]; then
   ./bin/rails db:prepare
 fi
 

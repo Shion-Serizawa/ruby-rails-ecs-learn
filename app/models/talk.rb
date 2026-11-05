@@ -36,6 +36,11 @@ class Talk < ApplicationRecord
   validates :speaker, presence: true, length: { maximum: 100 }
   validates :rating, numericality: { only_integer: true, in: 1..5 }, allow_nil: true
 
+  MAX_TAGS = 10
+
+  # タグは before_save で作るため、そこで Tag の検証に落ちると errors が空のまま save が false になる。
+  # 保存前にここで同じ条件を検証し、理由をフォームに出せるようにする
+  validate :tag_names_must_be_valid
   before_save :assign_pending_tags
 
   scope :chronological, -> { order(:starts_at, :id) }
@@ -70,6 +75,14 @@ class Talk < ApplicationRecord
   end
 
   private
+
+  def tag_names_must_be_valid
+    return if @pending_tag_names.nil?
+
+    errors.add(:tag_list, :too_many_tags, count: MAX_TAGS) if @pending_tag_names.size > MAX_TAGS
+    too_long = @pending_tag_names.select { it.length > Tag::NAME_MAX_LENGTH }
+    errors.add(:tag_list, :tag_too_long, count: Tag::NAME_MAX_LENGTH, names: too_long.join(", ")) if too_long.any?
+  end
 
   def assign_pending_tags
     return if @pending_tag_names.nil?

@@ -11,8 +11,16 @@ module Conferences
     def show
       conference = current_user.conferences.find(params.expect(:conference_id))
       send_data ConferenceMarkdownExporter.new(conference).call,
-                filename: "#{conference.name.parameterize.presence || "conference"}.md",
+                filename: "#{safe_filename(conference.name)}.md",
                 type: "text/markdown; charset=utf-8", disposition: :attachment
+    end
+
+    private
+
+    # 日本語名をそのまま使う (parameterize は非 ASCII を落とすため)。
+    # ファイル名に使えない文字・制御文字だけ置き換える。UTF-8 名は send_data が filename* で送る
+    def safe_filename(name)
+      name.gsub(%r{[\\/:*?"<>|[:cntrl:]]}, "_").strip.presence || "conference"
     end
   end
 end
