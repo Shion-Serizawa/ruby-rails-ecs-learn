@@ -1,4 +1,4 @@
 <p>
-  <%= link_to "パスワード再設定ページ", edit_password_url(@user.password_reset_token) %>からパスワードを再設定できます。
+  <%= t(".body_html", link: link_to(t(".link_text"), edit_password_url(@user.password_reset_token))) %>
 </p>
-<p>このリンクの有効期限は<%= distance_of_time_in_words(0, @user.password_reset_token_expires_in) %>です。</p>
+<p><%= t(".expires_in", duration: distance_of_time_in_words(0, @user.password_reset_token_expires_in)) %></p>

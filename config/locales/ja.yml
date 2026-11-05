@@ -185,3 +185,7 @@ ja:
   passwords_mailer:
     reset:
       subject: パスワードの再設定
+      link_text: パスワード再設定ページ
+      body_html: "%{link}からパスワードを再設定できます。"
+      text_body: 以下のURLからパスワードを再設定できます。
+      expires_in: このリンクの有効期限は%{duration}です。
