@@ -1,29 +1,30 @@
-# Be sure to restart your server when you modify this file.
-
-# Define an application-wide content security policy.
-# See the Securing Rails Applications Guide for more information:
+# Content Security Policy
 # https://guides.rubyonrails.org/security.html#content-security-policy-header
+#
+# JS は importmap で自前配信のみ、CSS も Tailwind のビルド成果物のみなので、外部オリジンは一切許可しない。
+# importmap のインライン <script type="importmap"> と Turbo のプログレスバーの <style> は nonce で許可する
+# (Turbo は csp_meta_tag の nonce を読む)。
+Rails.application.configure do
+  config.content_security_policy do |policy|
+    policy.default_src :self
+    policy.font_src    :self, :data
+    policy.img_src     :self, :data
+    policy.object_src  :none
+    policy.script_src  :self
+    policy.style_src   :self
+    policy.connect_src :self
+    policy.frame_ancestors :none
+    policy.base_uri    :self
+    policy.form_action :self
+  end
 
-# Rails.application.configure do
-#   config.content_security_policy do |policy|
-#     policy.default_src :self, :https
-#     policy.font_src    :self, :https, :data
-#     policy.img_src     :self, :https, :data
-#     policy.object_src  :none
-#     policy.script_src  :self, :https
-#     policy.style_src   :self, :https
-#     # Specify URI for violation reports
-#     # policy.report_uri "/csp-violation-report-endpoint"
-#   end
-#
-#   # Generate session nonces for permitted importmap, inline scripts, and inline styles.
-#   config.content_security_policy_nonce_generator = ->(request) { request.session.id.to_s }
-#   config.content_security_policy_nonce_directives = %w(script-src style-src)
-#
-#   # Automatically add `nonce` to `javascript_tag`, `javascript_include_tag`, and `stylesheet_link_tag`
-#   # if the corresponding directives are specified in `content_security_policy_nonce_directives`.
-#   # config.content_security_policy_nonce_auto = true
-#
-#   # Report violations without enforcing the policy.
-#   # config.content_security_policy_report_only = true
-# end
+  # Turbo のページ遷移と整合させるため、リクエストごとではなくセッション単位の nonce にする。
+  # Rails 既定の session.id は初回アクセス (セッション未作成) で空になり、importmap が実行されなくなるので使わない
+  config.content_security_policy_nonce_generator = lambda { |request|
+    request.session[:csp_nonce] ||= SecureRandom.base64(16)
+  }
+  config.content_security_policy_nonce_directives = %w[script-src style-src]
+
+  # letter_opener_web などの開発用ツールを壊さないよう、開発環境では報告のみ (ブラウザのコンソールに出る)
+  config.content_security_policy_report_only = Rails.env.development?
+end
