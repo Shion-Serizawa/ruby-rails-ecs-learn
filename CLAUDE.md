@@ -59,6 +59,9 @@ docker compose run --rm web bundle exec annotaterb models                 # マ�
   (`Talk#tag_list=` 参照)
 - **per-form CSRF**: ページ内の各フォームのトークンは別物。curl 等で検証するときは `<meta name="csrf-token">` を使う
 - **本番 `force_ssl`**: ALB のヘルスチェック用に `/up` はリダイレクト除外済み。消さないこと
+- **レート制限のカウンタは `Rails.cache`**: `rate_limit` と `PasswordResetThrottle` は Rails.cache に依存する
+  (本番 Solid Cache、開発/テスト memory_store)。`:null_store` にすると制限が効かなくなる。
+  テストでは `spec/support/cache.rb` が example ごとにクリアする
 - **JSON インポートのスキーマ**: `app/schemas/conference_import.schema.json` が唯一の定義。
   `Talk` の enum を変えたらスキーマも更新する (spec で不一致を検知する)
 - **credentials**: `config/master.key` はコミットしない。本番は `SECRET_KEY_BASE` 等を環境変数で渡す設計で、credentials は未使用
