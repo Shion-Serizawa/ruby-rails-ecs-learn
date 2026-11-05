@@ -18,11 +18,14 @@ class PasswordResetThrottle
     @cache = cache
   end
 
+  # 宛先ごと → 全体の順に数える。宛先ごとで止まった要求は全体の枠を消費せず、
+  # 全体で止まった要求は宛先ごとの枠を返す (送っていないのにその宛先の枠が減らないように)
   def allow?
     if over_limit?(per_user_key, PER_USER_LIMIT, PER_USER_WINDOW)
       Rails.logger.warn("[PasswordResetThrottle] per-user limit exceeded user_id=#{user.id}")
       false
     elsif over_limit?(global_key, GLOBAL_LIMIT, GLOBAL_WINDOW)
+      cache.decrement(per_user_key, 1)
       Rails.logger.warn("[PasswordResetThrottle] global limit exceeded")
       false
     else
