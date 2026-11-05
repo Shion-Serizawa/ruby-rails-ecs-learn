@@ -98,6 +98,7 @@ ECS に載せる際の想定:
 | `DB_HOST` / `DB_USERNAME` / `DB_PASSWORD` / `DB_NAME` | RDS 接続 (`_cache` `_queue` `_cable` のDBも使用) |
 | `SECRET_KEY_BASE` または `RAILS_MASTER_KEY` | Secrets Manager から注入 |
 | `APP_HOST` | **必須**。メール内リンクのホスト (未設定なら起動時に失敗) |
+| `APP_HOSTS` | 受け付ける Host ヘッダ (カンマ区切り)。未指定なら `APP_HOST` のホスト名 |
 | `MAILER_FROM` | **必須**。差出人 (SES で検証済みのアドレス。例: `Conf Notes <no-reply@example.com>`) |
 | `SMTP_ADDRESS` / `SMTP_PORT` / `SMTP_USERNAME` / `SMTP_PASSWORD` | SES 等 |
 | `RAILS_FORCE_SSL` / `RAILS_ASSUME_SSL` | ALB で TLS 終端する前提で既定 `true` |

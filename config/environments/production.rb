@@ -98,12 +98,10 @@ Rails.application.configure do
   # Only use :id for inspections in production.
   config.active_record.attributes_for_inspect = [:id]
 
-  # Enable DNS rebinding protection and other `Host` header attacks.
-  # config.hosts = [
-  #   "example.com",     # Allow requests from example.com
-  #   /.*\.example\.com/ # Allow requests from subdomains like `www.example.com`
-  # ]
-  #
-  # Skip DNS rebinding protection for the default health check endpoint.
-  # config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
+  # Host ヘッダの許可リスト (DNS rebinding / Host ヘッダ汚染対策)。カンマ区切りで複数指定可。
+  # 未指定なら APP_HOST (メール内リンクのホスト) のホスト名部分を使う
+  config.hosts = ENV.fetch("APP_HOSTS") { required_env.call("APP_HOST").split(":").first }
+                    .split(",").map(&:strip).compact_blank
+  # ALB のヘルスチェックは Host にタスクの IP を入れてくるので /up だけ除外する
+  config.host_authorization = { exclude: ->(request) { request.path == "/up" } }
 end

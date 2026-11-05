@@ -20,6 +20,7 @@ x-app: &app
     RAILS_FORCE_SSL: "false"
     RAILS_ASSUME_SSL: "false"
     APP_HOST: localhost:8080
+    APP_HOSTS: localhost
     APP_PROTOCOL: http
     MAILER_FROM: "Conf Notes <no-reply@localhost>"
     SMTP_ADDRESS: mail
