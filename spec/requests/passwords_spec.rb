@@ -38,4 +38,67 @@ RSpec.describe "Passwords" do
       expect(flash[:alert]).to eq "しばらく時間をおいてから再度お試しください"
     end
   end
+
+  describe "GET /passwords/:token/edit" do
+    it "有効なトークンなら再設定フォームを表示する" do
+      get edit_password_path(user.password_reset_token)
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "不正なトークンならリセット要求画面へ戻す" do
+      get edit_password_path("invalid-token")
+      expect(response).to redirect_to(new_password_path)
+      expect(flash[:alert]).to eq "リンクが無効か期限切れです"
+    end
+
+    it "期限切れのトークンならリセット要求画面へ戻す" do
+      token = user.password_reset_token
+      travel 16.minutes do
+        get edit_password_path(token)
+        expect(response).to redirect_to(new_password_path)
+      end
+    end
+  end
+
+  describe "PUT /passwords/:token" do
+    def update_password(token, password, confirmation = password)
+      put password_path(token), params: { password:, password_confirmation: confirmation }
+    end
+
+    it "パスワードを変更し、既存のセッションをすべて破棄する" do
+      user.sessions.create!
+      update_password(user.password_reset_token, "new-password-1")
+
+      expect(response).to redirect_to(new_session_path)
+      expect(user.reload.authenticate("new-password-1")).to be_truthy
+      expect(user.sessions).to be_empty
+    end
+
+    it "変更後は同じトークンを再利用できない" do
+      token = user.password_reset_token
+      update_password(token, "new-password-1")
+      update_password(token, "new-password-2")
+
+      expect(response).to redirect_to(new_password_path)
+      expect(user.reload.authenticate("new-password-1")).to be_truthy
+    end
+
+    it "確認用と一致しなければ 422 でその理由を表示する" do
+      update_password(user.password_reset_token, "new-password-1", "different-1")
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("パスワード(確認)")
+    end
+
+    it "短すぎれば 422 でその理由を表示する" do
+      update_password(user.password_reset_token, "short")
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("8文字以上")
+    end
+
+    it "空なら変更せず 422 を返す" do
+      update_password(user.password_reset_token, "")
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(user.reload.authenticate("password123")).to be_truthy
+    end
+  end
 end

@@ -115,7 +115,6 @@ ja:
       rate_limited: しばらく時間をおいてから再度お試しください
     update:
       success: パスワードを再設定しました
-      mismatch: パスワードが一致しません
     invalid_token: リンクが無効か期限切れです
 
   conferences:

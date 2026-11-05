@@ -19,18 +19,24 @@ class PasswordsController < ApplicationController
   end
 
   def update
-    if @user.update(params.permit(:password, :password_confirmation))
+    if @user.update(password_params)
       @user.sessions.destroy_all
       redirect_to new_session_path, notice: t(".success")
     else
-      redirect_to edit_password_path(params[:token]), alert: t(".mismatch")
+      render :edit, status: :unprocessable_content
     end
   end
 
   private
 
+  # 空文字だと has_secure_password が代入を無視して「成功」してしまうため、nil にして必須エラーにする
+  def password_params
+    attrs = params.permit(:password, :password_confirmation)
+    attrs.merge(password: attrs[:password].presence)
+  end
+
   def set_user_by_token
-    @user = User.find_by!(password_reset_token: params.expect(:token))
+    @user = User.find_by_password_reset_token!(params.expect(:token))
   rescue ActiveSupport::MessageVerifier::InvalidSignature
     redirect_to new_password_path, alert: t("passwords.invalid_token")
   end
