@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Conventional Commits 形式かを検査する (lefthook の commit-msg フックから呼ばれる)
+set -euo pipefail
+
+msg_file="$1"
+first_line=$(head -n1 "$msg_file")
+
+# マージ / revert / fixup は対象外
+if [[ "$first_line" =~ ^(Merge|Revert|fixup!|squash!) ]]; then
+  exit 0
+fi
+
+pattern='^(feat|fix|refactor|perf|test|docs|style|build|ci|chore)(\([a-z0-9_-]+\))?!?: .+'
+if ! [[ "$first_line" =~ $pattern ]]; then
+  cat >&2 <<MSG
+✗ コミットメッセージが Conventional Commits 形式ではありません:
+    $first_line
+
+  形式: <type>(<scope>): <要約>
+  type: feat fix refactor perf test docs style build ci chore
+  例:   feat(import): JSON からの一括インポートを追加
+  詳細: CONTRIBUTING.md
+MSG
+  exit 1
+fi
